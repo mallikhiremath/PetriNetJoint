@@ -1,0 +1,20 @@
+{
+  "id": "PetriNetPlugin",
+  "name": "PetriNetPlugin",
+  "version": "0.1.0",
+  "description": "PetriNet Plugin",
+  "icon": {
+    "class": "glyphicon glyphicon-cog",
+    "src": ""
+  },
+  "disableServerSideExecution": false,
+  "disableBrowserSideExecution": true,
+  "dependencies": [],
+  "writeAccessRequired": true,
+  "configStructure": [
+    {
+      "name": "PetriNetPlugin",
+      "displayName": "PetriNetPlugin"
+    }
+  ]
+}

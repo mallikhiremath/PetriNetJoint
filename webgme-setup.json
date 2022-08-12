@@ -4,9 +4,26 @@
       "PetriNet": {
         "src": "src/seeds/PetriNet"
       }
+    },
+    "visualizers": {
+      "PetriNetVisualizer": {
+        "src": "panels/PetriNetVisualizer/PetriNetVisualizerPanel",
+        "title": "PetriNetVisualizer",
+        "panel": "src/visualizers/panels/PetriNetVisualizer",
+        "secondary": false,
+        "widget": "src/visualizers/widgets/PetriNetVisualizer"
+      }
+    },
+    "plugins": {
+      "PetriNetPlugin": {
+        "src": "src/plugins/PetriNetPlugin",
+        "test": "test/plugins/PetriNetPlugin"
+      }
     }
   },
   "dependencies": {
-    "seeds": {}
+    "seeds": {},
+    "visualizers": {},
+    "plugins": {}
   }
 }

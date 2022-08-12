@@ -32,3 +32,12 @@ build/Release
 node_modules
 tmp/
 blob-local-storage/
+
+# Package-lock
+package-lock.json
+
+# any python compiles
+*.pyc
+.DS_Store
+db/*
+!db/.empty_dir_4_git
