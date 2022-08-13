@@ -58,15 +58,42 @@ Add hierarchy
 
 
 ## Installation
-First, install the PetriNetJoint following:
+### Installation and running WebGme in Standalone mode (on the localhost):
+First, install the following components for your platform by following the installation guide from each of the websites:
 - [NodeJS](https://nodejs.org/en/) (LTS recommended)
-- [MongoDB](https://www.mongodb.com/)
+- [MongoDB](https://www.mongodb.com/) (version 3 to 5 recommended as of now)
 
 Second, start mongodb locally by running the `mongod` executable in your mongodb installation (you may need to create a `data` directory or set `--dbpath`).
+if setting a db path, one can execute the below command to use the dbpath:
+
+`mongod --dbpath ./db-petri-net-joint`
 
 Then, run `webgme start` from the project root to start. 
 
 Finally, navigate to `http://localhost:8888` to start using PetriNetJoint
+
+### Installation and running WebGme in Docker mode (this is only required if one wants to run the mongodo and WebGme in Docker containers)
+check out the project in any suitable directory
+
+Then edit the `.env` file in this root folder and set the DESIGN_STUDIO_BASE_DIR value to the full path of the current directory
+for example:
+
+DESIGN_STUDIO_BASE_DIR=/Users/user1/MiniProject/PetriNetJoint
+
+Then from the root of the project directory execute the following commands:
+1. `docker-compose build`   (this command builds the docker containers)
+2. `docker-compose up -d`   (this command will run the two containers)
+
+The first command will the mongodb and webgme docker containers with the following names:
+
+`petrinetjoint_mongo_1`
+
+`petrinetjoint_webgme_1`
+
+The 2nd command will run the above two containers.
+If you face db connectivity issues, please make sure the mongodb container is up and running and then execute the 2nd command agin to bring up the webgme container.
+
+Once the docker containers are running, navigate to `http://localhost:8888` to start using PetriNetJoint
 
 
 ### How to model using the design studio
@@ -122,5 +149,8 @@ This version of the studio provides the following features:
 
 References:
 https://ptolemy.berkeley.edu/projects/embedded/research/hsc/class/ee249/lectures/l7-PetriNets.pdf
-
+https://resources.jointjs.com/tutorial/installation
+https://inst.eecs.berkeley.edu/~ee249/fa07/discussions/PetriNets-Murata.pdf
+http://pages.di.unipi.it/ferrari/CORSI/SISD/Lezioni/WFModel.pdf
+https://webgme.readthedocs.io/_/downloads/en/latest/pdf/
 
