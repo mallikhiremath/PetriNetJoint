@@ -1,7 +1,7 @@
-# PetriNetJoint
+# PetriNet Networks
 
-## PetriNets Introduction and Domain Overview
-A Petri Net is a particular kind of directed graphs, with an initial state called a marking. 
+## Introduction to PetriNets and Domain Overview
+A PetriNet is a particular kind of directed graph, with an initial state called a marking. 
 The PetriNet graph has two kinds of vertices:
 - Places 
 - Transitions.
@@ -30,7 +30,7 @@ Here is an exmple PetriNet:
    2. An enabled transition may or may not fire 
    3. The firing of a transition modifies marking by consuming tokens from each of the input places and producing tokens in each of the output places
 
-### Some Subclasses of Petri nets
+### Some Subclasses of PetriNets
 #### Marked Graphs
 Every place has at most 1 predecessor and 1 successor transition
 Models only causality and concurrency (no conflict)
@@ -72,7 +72,8 @@ Finally, navigate to `http://localhost:8888` to start using PetriNetJoint
 ### How to model using the design studio
 Create a new Project with any appropriate name and choose the "PetriNet" as the base for it.
 
-The new project will be pre-populated with the PetriNetLanguage (Model) and with Examples
+The new project will be pre-populated with the PetriNetLanguage (Model) and with Examples.
+
 The Composition view on the right side will look like below:
 
 ![](docs/images/composition-view-01.png)
