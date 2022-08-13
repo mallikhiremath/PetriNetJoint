@@ -1,4 +1,62 @@
 # PetriNetJoint
+
+## PetriNets Introduction and Domain Overview
+A Petri Net is a particular kind of directed graphs, with an initial state called a marking. 
+The PetriNet graph has two kinds of vertices:
+- Places 
+- Transitions.
+ 
+Places are drawn as circles, and transitions are drawn as bars or rectangular boxes.
+Directed arcs may exist only between different types of vertices. (Such a graph is called a bipartite
+graph).
+
+PetriNet Model was introduced by `Carl Adam Petri` around 1962 (https://en.wikipedia.org/wiki/Carl_Adam_Petri)
+
+PetriNets can be applied many areas including but not limited to:
+1. Distributed Computing
+2. Manufacturing
+3. Network Communications
+4. Transportation etc..
+
+Here is an exmple PetriNet:
+![](docs/images/example-petrinet-graph.png)
+
+ 
+1. The Places (Circles) represent distributed state by holding tokens.
+   1. with marking (sate) M as a n-vector (m1, m2, m3..) where mi is the non-negative number of tokens in place pi
+   2. inital marking (M0) is the inital state.
+2. The Transitions represents actions/events 
+   1. A Transition is enabled if there are enough tokens in each input place it is connected with 
+   2. An enabled transition may or may not fire 
+   3. The firing of a transition modifies marking by consuming tokens from each of the input places and producing tokens in each of the output places
+
+### Some Subclasses of Petri nets
+#### Marked Graphs
+Every place has at most 1 predecessor and 1 successor transition
+Models only causality and concurrency (no conflict)
+
+#### State Machines
+Every transition has at most 1 predecessor and 1 successor place
+Models only causality and conflict– (no concurrency, no synchronizatio of parallel activities)
+
+#### Free-Choice Petri Nets
+Every transition after a choice has exactly 1 predecessor place
+The outcome of a choice depends on the value of the token rather than on its arrival time.
+
+### Petri Net Extenstions
+Add interpretation to tokens and transitions
+   - Colored nets (tokens have value)
+   
+Add time
+   - Time/timed Petri Nets
+   - Stochastic PNs
+   - Generalized Stochastic PNs
+
+Add hierarchy
+- Place Charts Nets
+   
+
+
 ## Installation
 First, install the PetriNetJoint following:
 - [NodeJS](https://nodejs.org/en/) (LTS recommended)
@@ -6,28 +64,62 @@ First, install the PetriNetJoint following:
 
 Second, start mongodb locally by running the `mongod` executable in your mongodb installation (you may need to create a `data` directory or set `--dbpath`).
 
-Then, run `webgme start` from the project root to start . Finally, navigate to `http://localhost:8888` to start using PetriNetJoint!
+Then, run `webgme start` from the project root to start. 
+
+Finally, navigate to `http://localhost:8888` to start using PetriNetJoint
 
 
-## Free-Choice PetriNets
-The literature on Petri nets has many papers that really aim to teach the concepts used.
+### How to model using the design studio
+Create a new Project with any appropriate name and choose the "PetriNet" as the base for it.
 
-In the case of free-choice Petri net, such an introduction can be found in the paper Structure Theory of Petri Nets: the Free Choice Hiatus by Eike Best, in the ACPN (Advanced Course on Petri Nets) 1986. (An online copy is here.)
+The new project will be pre-populated with the PetriNetLanguage (Model) and with Examples
+The Composition view on the right side will look like below:
 
-If anywhere, the intuition behind free-choice nets should be explained there, but that doesn't really happen, and I haven't seen such an explanation elsewhere, either.
-
-As far as there is an intuition behind free-choice nets, it is expressed by their name: whenever there is a choice, say, between step B or step C (that is to say: we have a place A with an arc to transition B and an arc to transition C), then that choice is free, that is to say, neither B or C are subject to any other additional conditions (that is to say, they cannot have additional input places).
-
-Rather than focusing on intuition, the paper describes free-choice nets as follows, and I think this is the standard way to explain them:
-
-One of the reasons Petri nets interest us is that they offer descriptions of concurrent system behaviour that can be statically analyzed. We can prove certain properties of the behaviour of Petri nets.
-However, for unrestricted Petri nets, certain important properties are extremely hard to analyze; for instance, the question whether the net is live, or whether a given marking can be reached. So it is interesting to study restricted forms of Petri nets for which such analysis is easier.
-One possible restriction is to say: no place may have more than one input transition, or more than one output transition. This type of Petri net is called an S-net. This eliminates parallelism and basically turns the net into a state machine. For instance, we can no longer write down a process in which the first thing to happen is A, then B and C in whatever order, and, finally, D. We can't put B and C in parallel.
-Another restriction is the reverse: no transition may have more than one input place or more than one output place. This type of Petri net is called a T-net or marked graph. Now, we do have parallelism, but we no longer have choice. For instance, we can no longer write down a process in which the first thing to happen is A, then either B or C, and, finally, D. We can't have a choice between B and C.
-Both restrictions are very severe, so it's interesting to look at compromises. Free-choice nets are just that: to quote Wikipedia, they are the nets in which every arc from a place to a transition is either the only arc from that place or the only arc to that transition. I.e. there can be both concurrency (parallelism) and conflict (choice), but not at the same time. So this is a proper generalization of S-nets and T-nets.
-Certain properties of the behaviour of Petri nets that are hard or impossible to decide for arbitrary Petri nets become doable for free-choice Petri nets.
-So the prime motivation for free-choice nets is not any particular intuition, but the fact that they allow certain forms of static analysis of behaviour.
+![](docs/images/composition-view-01.png)
 
 
-## Marked Graph:
-This example presents a Marked Graph, where a process is forked at transition T1 and synchronised at T4. In between, two operations take place in non-deterministic fashion, T2 and T3. In fact, Petri nets are so much non-deterministic, that they may not take place at all. But the reason for having this non-deterministic property is not this, but to mimic real-life experiences which shows that parallel computing always means that it is impossible to determine which process/thread will finish first i.e. which operation(s) will execute faster. This can be due to waiting for I/O in real world, or just the different parameters given to the processes/threads.
+Now one can create a new PetriNework by going into the Composition view of Examples folder and then dragging and dropping the "PetriNet" component from the Part Browser (rightside)
+Then give a new name to the new PetriNet you are planning to develop and then enter its composition view 
+
+Here is how the Composition view of Examples folder looks like:
+
+![](docs/images/composition-view-of-examples.png)
+
+In the composition view of the newly created PetiNet, one will have access to Places and Transitions from the Part Browser (on the right side)
+Drag and Drop the Places and Transitions as requried and start buliding a new Network!
+
+The ars that stem from a Place and end in Transition are caleed InplaceArc
+
+The arcs that stem from a Transition and end in Place are called OutplaceArc
+
+Arcs can be drawn between Places and Transitions by  clicking an dragging the mouse from one component to the other.
+
+The `tokens` attribute of the Places can be edited and given some initial number of tokens
+For example in the below PetriNet the Initial sate of Start Place has 8 tokens
+A sample Prepared Petrinet would looke like below:
+
+![](docs/images/state-machine-petrinet-sample-01.png)
+
+One can create many Networks and can be put under the Examples folders.
+If required the Name of the Folder can be updated as desired
+Or more examples folder can be created and dragging and dropping the `Examples` folder from the PetriNetLanguage's composition view
+
+### Features provided by this version of the Design Studio:
+This version of the studio provides the following features:
+1. It provides users an ability to set the number of initial tokens for each places.
+2. The PetriNetVisualizer view provides an ability for users to
+   1. View the inital state of their network
+   2. Simulate the flow by stepping through the transitions in the network
+   3. If a transition is enabled then it will be show with green color
+   4. If a transition is not enabled then it will be shown with red color
+   5. Users can click the enabled (green color) transition boxes and watch the flow of the tokens from place to place
+   6. It provides an ability to reset the network visualization to the initial state.
+   7. And user can repeat this as many times as desired.
+   8. If a newtork ends in a dead lock, then all of the transitions would be shown in red color, then user would reset it to its initial state.
+    
+
+
+References:
+https://ptolemy.berkeley.edu/projects/embedded/research/hsc/class/ee249/lectures/l7-PetriNets.pdf
+
+

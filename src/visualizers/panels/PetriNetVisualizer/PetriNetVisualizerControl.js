@@ -111,23 +111,23 @@ define([
                 
         });
 
+        // when the event received is of type complete, initialize the PetriNet
         if (events.length && events[0].etype === 'complete' && self._networkRootLoaded) {
-            // complete means we got all requested data and we do not have to wait for additional load cycles
             self._initPetriNet();
         }       
     };
 
     PetriNetVisualizerControl.prototype._initPetriNet = function () {
         const self = this;
-        //just for the ease of use, lets create a META dictionary
+        //get the raw meta from all nodes
         const rawMETA = self._client.getAllMetaNodes();
         const META = {};
         rawMETA.forEach(node => {
-            META[node.getAttribute('name')] = node.getId(); //we just need the id...
+            // for each node get the nodeId and store it in the META
+            META[node.getAttribute('name')] = node.getId();
         });
         self._logger.debug( "_initPetriNet::META " + JSON.stringify( META ) );
-        //now we collect all data we need for network visualization
-        //we need our states (names, position, type), need the set of next state (with event names)
+        //Collect the data for the visualization
         const pnNode = self._client.getNode(self._currentNodeId);
         const elementIds = pnNode.getChildrenIds();
         const pn = {
@@ -142,6 +142,7 @@ define([
         self._widget.initPetriNet(pn);
     };
 
+    // Cleare the petriNet
     PetriNetVisualizerControl.prototype.clearPetriNet = function () {
         const self = this;
         self._networkRootLoaded = false;

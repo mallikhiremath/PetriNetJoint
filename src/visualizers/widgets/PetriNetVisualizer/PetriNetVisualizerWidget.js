@@ -28,6 +28,7 @@ define(['jointjs', 'css!./styles/PetriNetVisualizerWidget.css'], function (joint
         // set widget class
         this._el.addClass(WIDGET_CLASS);
 
+        // create a joint graph to represent the PetriNet
         this._jointPetriNet = new joint.dia.Graph;
         this._jointPaper = new joint.dia.Paper({
             el: this._el,
@@ -39,8 +40,8 @@ define(['jointjs', 'css!./styles/PetriNetVisualizerWidget.css'], function (joint
 
         this._jointPaper.on('element:pointerclick', function (elementView) {
             const currentElement = elementView.model;
-            if (self._webgmePetriNet) {
-                const pn = self._webgmePetriNet;
+            if (self._petriNet) {
+                const pn = self._petriNet;
                 const transitionPath = pn.jointId2transition[currentElement.id];
                 if (transitionPath) {
                     self._setCurrentPlaces(transitionPath);
@@ -55,7 +56,7 @@ define(['jointjs', 'css!./styles/PetriNetVisualizerWidget.css'], function (joint
 
     PetriNetVisualizerWidget.prototype.isTransitionEnabled = function (trId) {
         const self = this;
-        const pn = self._webgmePetriNet;
+        const pn = self._petriNet;
         const inplaces = pn.transitions[trId].inplaces;
         const trName = pn.transitions[trId].name;
 
@@ -70,7 +71,7 @@ define(['jointjs', 'css!./styles/PetriNetVisualizerWidget.css'], function (joint
         return res;
     }
 
-
+    // This method draws the tokens on the ui
     PetriNetVisualizerWidget.prototype.drawTokens = function (place, placeMeta, tokenDiameter) {
         var self = this;
 
@@ -83,7 +84,7 @@ define(['jointjs', 'css!./styles/PetriNetVisualizerWidget.css'], function (joint
         var cx = vpos.x + vr;
         var cy = vpos.y + vr;
 
-        var radius_of_satellites_from_center = 30;
+        var radius_of_satellites_from_center = 28;
         var radius_of_small_circles = 4
         var number_of_satellite_circles = placeMeta.tokens;
 
@@ -124,49 +125,48 @@ define(['jointjs', 'css!./styles/PetriNetVisualizerWidget.css'], function (joint
 
         // Sotre the PetriNet in the _originalPetriNet
         if (self._originalPetriNet) {
-            self._webgmePetriNet = JSON.parse(JSON.stringify(this._originalPetriNet));
+            self._petriNet = JSON.parse(JSON.stringify(this._originalPetriNet));
         }
         else {
             // store the PetriNet 
             self._originalPetriNet = JSON.parse(JSON.stringify(petriNetDescriptor));
-            self._webgmePetriNet = petriNetDescriptor;
+            self._petriNet = petriNetDescriptor;
         }
 
-        self._webgmePetriNet.currTransitionPath = self._webgmePetriNet.init;
+        self._petriNet.currTransitionPath = self._petriNet.init;
         self._jointPetriNet.clear();
-        const pn = self._webgmePetriNet;
-        pn.jointId2place = {}; // this dictionary will connect the on-screen id to the state id first add the places
-        pn.jointId2transition = {};
-        pn.placesAndTransitions = {};
-        Object.keys(pn.places).forEach(elemId => {
+        const petriNet = self._petriNet;
+        petriNet.jointId2place = {};
+        petriNet.jointId2transition = {};
+        petriNet.placesAndTransitions = {};
+        Object.keys(petriNet.places).forEach(elemId => {
             let vertex = new joint.shapes.standard.Circle({
-                position: pn.places[elemId].position,
+                position: petriNet.places[elemId].position,
                 size: { width: 70, height: 70 },
                 attrs: {
                     body: {
                         fill: "white",
-                        cursor: "default" // "pointer"
+                        cursor: "default"
                     },
                     label: {
-                        text: pn.places[elemId].name,
+                        text: petriNet.places[elemId].name,
                         fill: "black",
-                        cursor: "default" // "pointer"
+                        cursor: "default"
                     }
                 }
             });
             vertex.addTo(self._jointPetriNet);
-            // vertex.prop( { data: pn.places[elemId] } );
-            self.drawTokens(vertex, pn.places[elemId], 70);
-            pn.places[elemId].joint = vertex;
-            pn.placesAndTransitions[elemId] = pn.places[elemId];
-            pn.jointId2place[vertex.id] = elemId;
+            self.drawTokens(vertex, petriNet.places[elemId], 70);
+            petriNet.places[elemId].joint = vertex;
+            petriNet.placesAndTransitions[elemId] = petriNet.places[elemId];
+            petriNet.jointId2place[vertex.id] = elemId;
         });
 
         // Process the transitions
-        Object.keys(pn.transitions).forEach(elemId => {
+        Object.keys(petriNet.transitions).forEach(elemId => {
             const isEnabled = self.isTransitionEnabled(elemId);
             let vertex = new joint.shapes.standard.Rectangle({
-                position: pn.transitions[elemId].position,
+                position: petriNet.transitions[elemId].position,
                 size: { width: 70, height: 60 },
                 attrs: {
                     body: {
@@ -175,25 +175,25 @@ define(['jointjs', 'css!./styles/PetriNetVisualizerWidget.css'], function (joint
                         stroke: (isEnabled) ? "black" : "red",
                     },
                     label: {
-                        text: pn.transitions[elemId].name,
+                        text: petriNet.transitions[elemId].name,
                         fill: "black",
                         cursor: "pointer"
                     }
                 }
             });
             vertex.addTo(self._jointPetriNet);
-            pn.transitions[elemId].joint = vertex;
-            pn.placesAndTransitions[elemId] = pn.transitions[elemId];
-            pn.jointId2transition[vertex.id] = elemId;
+            petriNet.transitions[elemId].joint = vertex;
+            petriNet.placesAndTransitions[elemId] = petriNet.transitions[elemId];
+            petriNet.jointId2transition[vertex.id] = elemId;
         });
 
-        Object.keys(pn.placesAndTransitions).forEach(elemId => {
-            const elem = pn.placesAndTransitions[elemId];
+        Object.keys(petriNet.placesAndTransitions).forEach(elemId => {
+            const elem = petriNet.placesAndTransitions[elemId];
             elem.outplaces.forEach(outplaceArc => {
                 elem.jointNext = elem.jointNext || {};
                 const link = new joint.shapes.standard.Link({
                     source: { id: elem.joint.id },
-                    target: { id: pn.placesAndTransitions[outplaceArc.node].joint.id },
+                    target: { id: petriNet.placesAndTransitions[outplaceArc.node].joint.id },
                     attrs: {
                         line: {
                             strokeWidth: 1
@@ -209,12 +209,6 @@ define(['jointjs', 'css!./styles/PetriNetVisualizerWidget.css'], function (joint
                             args: {
                                 keepGradient: true,
                                 ensureLegibility: true
-                            }
-                        },
-                        attrs: {
-                            text: {
-                                text: outplaceArc.name,
-                                fontWeight: 'bold'
                             }
                         }
                     }]
@@ -232,51 +226,53 @@ define(['jointjs', 'css!./styles/PetriNetVisualizerWidget.css'], function (joint
     PetriNetVisualizerWidget.prototype.destroyPetriNet = function () {
 
     };
+    
+        // This method Resets the Petrinet
+    PetriNetVisualizerWidget.prototype.resetPetriNet = function () {
+        this._petriNet.currTransitionPath = this._petriNet.init;
+        this.initPetriNet(this._petriNet);
+    };
+
 
     PetriNetVisualizerWidget.prototype.fireEvent = function (event) {
         const self = this;
-        const current = self._webgmePetriNet.places[self._webgmePetriNet.currTransitionPath];
+        const current = self._petriNet.places[self._petriNet.currTransitionPath];
         const link = current.jointNext[event];
         const linkView = link.findView(self._jointPaper);
         linkView.sendToken(joint.V('circle', { r: 10, fill: 'black' }), { duration: 500 }, function () {
-            self._webgmePetriNet.currTransitionPath = current.next[event];
+            self._petriNet.currTransitionPath = current.next[event];
             self._decoratePetriNet();
         });
     };
 
-    // This method Resets the Petrinet
-    PetriNetVisualizerWidget.prototype.resetPetriNet = function () {
-        this._webgmePetriNet.currTransitionPath = this._webgmePetriNet.init;
-        this.initPetriNet(this._webgmePetriNet);
-    };
 
     PetriNetVisualizerWidget.prototype._animateMove = function () {
-        // const elem = pn.placesAndTransitions[];
-    }
 
+    }
+    // This method decores the PetriNet
     PetriNetVisualizerWidget.prototype._decoratePetriNet = function () {
         const self = this;
-        const pn = this._webgmePetriNet;
-        if (pn.currTransitionPath) {
-            if (!self.isTransitionEnabled(pn.currTransitionPath)) {
+        const petriNet = this._petriNet;
+        if (petriNet.currTransitionPath) {
+            if (!self.isTransitionEnabled(petriNet.currTransitionPath)) {
                 return;
             }
 
-            const currTr = pn.transitions[pn.currTransitionPath];
-            currTr.inplaces.forEach(ip => {
-                const pl = pn.places[ip.node];
+            const currTransition = petriNet.transitions[petriNet.currTransitionPath];
+            currTransition.inplaces.forEach(ip => {
+                const pl = petriNet.places[ip.node];
                 pl.tokens--;
                 self.drawTokens(pl.joint, pl, 70);
             });
 
-            currTr.outplaces.forEach(op => {
-                const pl = pn.places[op.node];
+            currTransition.outplaces.forEach(op => {
+                const pl = petriNet.places[op.node];
                 pl.tokens++;
                 self.drawTokens(pl.joint, pl, 70);
             });
 
             // update all transitions
-            Object.entries(pn.transitions).forEach(e => {
+            Object.entries(petriNet.transitions).forEach(e => {
                 const color = self.isTransitionEnabled(e[0]) ? "lightgreen" : "lightsalmon";
                 e[1].joint.attr("body/fill", color);
                 e[1].joint.attr("body/stroke", color === "lightgreen" ? "black" : "red");
@@ -285,7 +281,7 @@ define(['jointjs', 'css!./styles/PetriNetVisualizerWidget.css'], function (joint
     };
 
     PetriNetVisualizerWidget.prototype._setCurrentPlaces = function (transitionPath) {
-        this._webgmePetriNet.currTransitionPath = transitionPath;
+        this._petriNet.currTransitionPath = transitionPath;
         this._decoratePetriNet();
     };
 
@@ -321,7 +317,6 @@ define(['jointjs', 'css!./styles/PetriNetVisualizerWidget.css'], function (joint
         return_value.y = center_y + radius * Math.sin(angle_in_radians);
         return return_value;
     }
-
 
 
     return PetriNetVisualizerWidget;
